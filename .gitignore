@@ -3,3 +3,4 @@ venv/
 env/
 .venv/
 .env/
+key.env

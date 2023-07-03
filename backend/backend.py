@@ -8,7 +8,7 @@ import openai
 app = Flask(__name__)
 
 # Set your OpenAI API key
-openai.api_key = "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"
+openai.api_key = api_key
 
 # Function to download the audio of a YouTube video based on its video ID
 def download(video_id: str) -> str:
