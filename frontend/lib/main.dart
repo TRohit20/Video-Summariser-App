@@ -8,14 +8,14 @@ void main() {
 }
 
 class YoutubeSummaryApp extends StatelessWidget {
-  const YoutubeSummaryApp({super.key});
+  const YoutubeSummaryApp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Summariser',
       theme: ThemeData(
-        primarySwatch: Colors.teal,
+        primarySwatch: Colors.orange,
       ),
       home: const SummaryPage(),
     );
@@ -23,15 +23,41 @@ class YoutubeSummaryApp extends StatelessWidget {
 }
 
 class SummaryPage extends StatefulWidget {
-  const SummaryPage({super.key});
+  const SummaryPage({Key? key}) : super(key: key);
 
   @override
   _SummaryPageState createState() => _SummaryPageState();
 }
 
-class _SummaryPageState extends State<SummaryPage> {
+class _SummaryPageState extends State<SummaryPage>
+    with SingleTickerProviderStateMixin {
   final TextEditingController _videoIdController = TextEditingController();
   String _summary = '';
+
+  AnimationController? _animationController;
+  Animation<double>? _animation;
+
+  @override
+  void initState() {
+    super.initState();
+    _animationController = AnimationController(
+      duration: const Duration(milliseconds: 1000),
+      vsync: this,
+    );
+    _animation = Tween<double>(begin: 0, end: 1).animate(
+      CurvedAnimation(
+        parent: _animationController!,
+        curve: Curves.easeInOut,
+      ),
+    );
+    _animationController!.forward();
+  }
+
+  @override
+  void dispose() {
+    _animationController!.dispose();
+    super.dispose();
+  }
 
   Future<void> _getSummary(String videoId) async {
     const url = 'http://127.0.0.1:5000/api/transcribe';
@@ -50,45 +76,88 @@ class _SummaryPageState extends State<SummaryPage> {
     }
   }
 
+  void _navigateToSummaryPage() {
+    final videoId = _videoIdController.text.trim();
+    _getSummary(videoId).then((_) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => SummaryResultPage(summary: _summary),
+        ),
+      );
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Video Summary'),
+        title: const Text('Summariser'),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
+      body: AnimatedBuilder(
+        animation: _animation!,
+        builder: (context, child) {
+          return Opacity(
+            opacity: _animation!.value,
+            child: Transform.scale(
+              scale: _animation!.value,
+              child: child,
+            ),
+          );
+        },
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Center(
+                child: Text(
+                  'Enter Video ID:',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+              ),
+              TextField(
+                controller: _videoIdController,
+              ),
+              const SizedBox(height: 16),
+              Center(
+                child: ElevatedButton(
+                  onPressed: _navigateToSummaryPage,
+                  child: const Text('Get Summary'),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class SummaryResultPage extends StatelessWidget {
+  final String summary;
+
+  const SummaryResultPage({required this.summary, Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Summary'),
+      ),
+      body: Center(
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             const Text(
-              'Enter Video ID:',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            TextField(
-              controller: _videoIdController,
-            ),
-            const SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: () {
-                final videoId = _videoIdController.text.trim();
-                _getSummary(videoId);
-              },
-              child: const Text('Get Summary'),
-            ),
-            const SizedBox(height: 16),
-            const Text(
-              'Summary of the given video:',
+              'Summary of the given video is:',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
-            Expanded(
-              child: SingleChildScrollView(
-                child: Text(
-                  _summary,
-                  style: const TextStyle(fontSize: 16),
-                ),
-              ),
+            Text(
+              summary,
+              style: const TextStyle(fontSize: 16),
+              textAlign: TextAlign.center,
             ),
           ],
         ),
