@@ -13,9 +13,9 @@ class YoutubeSummaryApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Youtube Summary App',
+      title: 'Summariser',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        primarySwatch: Colors.teal,
       ),
       home: const SummaryPage(),
     );
@@ -63,7 +63,7 @@ class _SummaryPageState extends State<SummaryPage> {
           children: [
             const Text(
               'Enter Video ID:',
-              style: TextStyle(fontSize: 18),
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             TextField(
               controller: _videoIdController,
