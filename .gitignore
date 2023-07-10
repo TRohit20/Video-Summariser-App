@@ -4,3 +4,4 @@ env/
 .venv/
 .env/
 key.env
+audio
