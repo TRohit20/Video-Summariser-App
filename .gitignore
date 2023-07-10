@@ -4,4 +4,5 @@ env/
 .venv/
 .env/
 key.env
+*.m4a
 audio
