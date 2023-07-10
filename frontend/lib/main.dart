@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-// ignore: depend_on_referenced_packages
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
@@ -34,6 +33,7 @@ class _SummaryPageState extends State<SummaryPage>
     with SingleTickerProviderStateMixin {
   final TextEditingController _videoIdController = TextEditingController();
   String _summary = '';
+  String _videoSource = 'youtube'; // Default video source
 
   AnimationController? _animationController;
   Animation<double>? _animation;
@@ -60,10 +60,12 @@ class _SummaryPageState extends State<SummaryPage>
     super.dispose();
   }
 
-  Future<void> _getSummary(String videoId) async {
+  Future<void> _getSummary(String videoId, String videoSource) async {
     const url = 'http://127.0.0.1:5000/api/transcribe';
-    final response =
-        await http.post(Uri.parse(url), body: {'videoId': videoId});
+    final response = await http.post(Uri.parse(url), body: {
+      'videoId': videoId,
+      'videoSource': videoSource,
+    });
 
     if (response.statusCode == 200) {
       final responseData = jsonDecode(response.body);
@@ -79,7 +81,7 @@ class _SummaryPageState extends State<SummaryPage>
 
   void _navigateToSummaryPage() {
     final videoId = _videoIdController.text.trim();
-    _getSummary(videoId).then((_) {
+    _getSummary(videoId, _videoSource).then((_) {
       Navigator.push(
         context,
         MaterialPageRoute(
@@ -119,6 +121,26 @@ class _SummaryPageState extends State<SummaryPage>
               ),
               TextField(
                 controller: _videoIdController,
+              ),
+              const SizedBox(height: 16),
+              const Text(
+                'Select Video Source:',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              DropdownButton<String>(
+                value: _videoSource,
+                onChanged: (String? newValue) {
+                  setState(() {
+                    _videoSource = newValue!;
+                  });
+                },
+                items: <String>['youtube', 'vimeo']
+                    .map<DropdownMenuItem<String>>((String value) {
+                  return DropdownMenuItem<String>(
+                    value: value,
+                    child: Text(value.toUpperCase()),
+                  );
+                }).toList(),
               ),
               const SizedBox(height: 16),
               Center(
