@@ -1,3 +1,4 @@
+from backend.audio.downloader import download_brightcove
 from flask import Blueprint, request, jsonify
 from audio.downloader import download_youtube, download_vimeo
 from models.transcription import transcribe
@@ -15,6 +16,8 @@ def transcribe_handler():
             audio_path = download_youtube(video_id)
         elif video_source == 'vimeo':
             audio_path = download_vimeo(video_id)
+        elif video_source == 'brightcove':
+           audio_path = download_brightcove(video_id)
         else:
             return jsonify({'error': 'Invalid video source'}), 400
 
