@@ -5,4 +5,4 @@ env/
 .env/
 key.env
 *.m4a
-audio
+backend/audio/__pycache__/downloader.cpython-311.pyc
