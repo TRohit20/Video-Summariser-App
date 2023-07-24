@@ -1,30 +1,36 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
+import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import 'package:frontend/main.dart';
+import 'package:frontend/main.dart'; // Assuming the main.dart file is in the 'frontend' folder.
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
+  testWidgets('HomePage should render correctly', (WidgetTester tester) async {
     await tester.pumpWidget(const YoutubeSummaryApp());
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+    expect(find.text('Summarizer'), findsOneWidget);
+    expect(find.byType(TextField), findsOneWidget);
+    expect(find.byType(DropdownButton2), findsOneWidget);
+    expect(find.byType(ElevatedButton), findsOneWidget);
+  });
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
+  testWidgets('Entering video ID updates the text field',
+      (WidgetTester tester) async {
+    await tester.pumpWidget(const YoutubeSummaryApp());
+
+    final videoIdField = find.byType(TextField);
+    await tester.enterText(videoIdField, 'example_video_id');
+    expect(find.text('example_video_id'), findsOneWidget);
+  });
+
+  testWidgets('Selecting video source updates the dropdown value',
+      (WidgetTester tester) async {
+    await tester.pumpWidget(const YoutubeSummaryApp());
+
+    final dropdown = find.byType(DropdownButton2);
+    await tester.tap(dropdown);
     await tester.pump();
-
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    await tester.tap(find.text('VIMEO'));
+    await tester.pump();
+    expect(find.text('VIMEO'), findsOneWidget);
   });
 }
