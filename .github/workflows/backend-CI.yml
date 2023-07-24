@@ -28,6 +28,10 @@ jobs:
         pip install pytest youtube-dl openai openai-whisper 
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
     
+    - name: Set PYTHONPATH
+      run: |
+        echo "export PYTHONPATH=$PYTHONPATH:$GITHUB_WORKSPACE/backend" >> $GITHUB_ENV
+
     - name: Test with pytest
       env: 
         PYTHONPATH: backend
