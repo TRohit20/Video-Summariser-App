@@ -1,6 +1,6 @@
 import unittest
 from unittest.mock import patch
-from flask import Flask, current_app
+from flask import Flask, current_app, request
 from flask_testing import TestCase
 from app import app
 
@@ -11,8 +11,8 @@ class APITests(TestCase):
 
     def test_transcribe_route(self):
         response = self.client.post('/api/transcribe', data={
-            'videoId': 'VIDEO_ID',
-            'videoSource': 'youtube'
+            'videoId': request.form['videoId'],
+            'videoSource': request.form['videoSource']
         })
         data = response.get_json()
         self.assertEqual(response.status_code, 200)
@@ -21,7 +21,7 @@ class APITests(TestCase):
 
     def test_transcribe_route_invalid_source(self):
         response = self.client.post('/api/transcribe', data={
-            'videoId': 'VIDEO_ID',
+            'videoId': request.form['videoId'],
             'videoSource': 'invalid'
         })
         data = response.get_json()
@@ -32,8 +32,8 @@ class APITests(TestCase):
         with patch('whisper.load_model') as mock_load_model:
             mock_load_model.side_effect = Exception('Test exception')
             response = self.client.post('/api/transcribe', data={
-                'videoId': 'VIDEO_ID',
-                'videoSource': 'youtube'
+                'videoId': request.form['videoId'],
+                'videoSource': request.form['videoSource']
             })
             data = response.get_json()
             self.assertEqual(response.status_code, 500)

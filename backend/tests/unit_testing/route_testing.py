@@ -1,12 +1,12 @@
 from unittest.mock import patch
-from flask import app
+from flask import app, request
 
 
 def test_transcribe_route(self):
     with app.test_client() as client:
         response = client.post('/api/transcribe', data={
-            'videoId': 'VIDEO_ID',
-            'videoSource': 'youtube'
+            'videoId': request.form['videoId'],
+            'videoSource': request.form['videoSource']
         })
         data = response.get_json()
         self.assertEqual(response.status_code, 200)
@@ -16,7 +16,7 @@ def test_transcribe_route(self):
 def test_transcribe_route_invalid_source(self):
     with app.test_client() as client:
         response = client.post('/api/transcribe', data={
-            'videoId': 'VIDEO_ID',
+            'videoId': request.form['videoId'],
             'videoSource': 'invalid'
         })
         data = response.get_json()
@@ -28,8 +28,8 @@ def test_transcribe_route_exception(self, mock_load_model):
         mock_load_model.side_effect = Exception('Test exception')
         with app.test_client() as client:
             response = client.post('/api/transcribe', data={
-                'videoId': 'VIDEO_ID',
-                'videoSource': 'youtube'
+                'videoId': request.form['videoId'],
+                'videoSource': request.form['videoSource']
             })
             data = response.get_json()
             self.assertEqual(response.status_code, 500)
