@@ -13,19 +13,23 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - uses: dart-lang/setup-dart@9a04e6d73cca37bd455e0608d7e5092f881fd603
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.10.3' 
+          
       - name: Install dependencies
         working-directory: frontend
         run: flutter pub get
 
       - name: Verify formatting
-        working-directory: Video-Summariser-App/frontend
+        working-directory: frontend
         run: dart format --output=none --set-exit-if-changed .
 
       - name: Analyze project source
-        working-directory: Video-Summariser-App/frontend
+        working-directory: frontend
         run: dart analyze
 
       - name: Run tests
-        working-directory: Video-Summariser-App/frontend
+        working-directory: frontend
         run: flutter test
