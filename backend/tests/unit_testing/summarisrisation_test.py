@@ -1,5 +1,5 @@
 import unittest
-from backend.models.summariser import generate_summary
+from models.summariser import generate_summary
 
 class SummarizationTests(unittest.TestCase):
     def test_generate_summary(self):

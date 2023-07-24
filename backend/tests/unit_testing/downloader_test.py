@@ -1,6 +1,6 @@
 import os
 import unittest
-from backend.audio.downloader import download_youtube, download_vimeo
+from audio.downloader import download_youtube, download_vimeo
 
 class DownloaderTests(unittest.TestCase):
     def test_download_youtube(self):

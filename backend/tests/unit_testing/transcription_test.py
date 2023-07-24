@@ -1,5 +1,5 @@
 import unittest
-from backend.models.transcription import transcribe
+from models.transcription import transcribe
 
 class TranscriptionTests(unittest.TestCase):
     def test_transcribe(self):
